@@ -1,5 +1,4 @@
-import {useState} from 'react'
-
+import {useState, useEffect} from 'react'
 
 export default function Main() {
 
@@ -9,7 +8,26 @@ export default function Main() {
     imageUrl: 'http://i.imgflip.com/1bij.jpg'
    })
 
-   function handleChange(eve){
+   const [Allmeme, setAllMeme] = useState([])
+
+   useEffect(() => {
+    fetch('https://api.imgflip.com/get_memes')
+    .then(res => res.json())
+    .then(data => setAllMeme(data.data.memes))
+   }, [])
+
+   function getImage(){
+    if(Allmeme.length > 0){
+      const number = Math.floor(Math.random() * Allmeme.length)
+      const memeUrl = Allmeme[number].url
+      setMemeObject(prevMeme => ({...prevMeme, imageUrl: memeUrl}))
+    }else{
+      console.log('loading...')
+    }
+ 
+   }
+
+  function handleChange(eve){
     const {value, name} = eve.currentTarget
     /* setMemeObject(prevText => ({...prevText, topText: value })) */
     setMemeObject(prevText => {
@@ -27,7 +45,7 @@ export default function Main() {
         <label htmlFor="bottomText">Bottom Text</label>
         <input type="text" id="bottomText" placeholder="Walk into Mordor" name="bottomText" value={memeObject.bottomText} onChange={handleChange}/>
         </div>
-        <button>Get a new meme image 🖼</button>
+        <button onClick={getImage}>Get a new meme image 🖼</button>
       </div>
       <div className="meme">
         <img src={memeObject.imageUrl}/>
